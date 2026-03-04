@@ -51,6 +51,7 @@ PAPILO_PRESOLVE_EXPORT void papilo_get_matrix(const PAPILO_PRESOLVE_RESULT* r, i
 PAPILO_PRESOLVE_EXPORT void papilo_get_col_map(const PAPILO_PRESOLVE_RESULT* r, int* map);
 PAPILO_PRESOLVE_EXPORT void papilo_get_row_map(const PAPILO_PRESOLVE_RESULT* r, int* map);
 PAPILO_PRESOLVE_EXPORT int papilo_postsolve(const PAPILO_PRESOLVE_RESULT* r, const double* reduced, double* original);
+PAPILO_PRESOLVE_EXPORT void papilo_map_primal(const PAPILO_PRESOLVE_RESULT* r, const double* x_orig, double* x_red);
 PAPILO_PRESOLVE_EXPORT void papilo_result_free(PAPILO_PRESOLVE_RESULT* r);
 
 #ifdef __cplusplus

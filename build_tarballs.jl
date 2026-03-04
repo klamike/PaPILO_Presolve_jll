@@ -20,23 +20,7 @@ script = preamble * raw"""
 cd ${WORKSPACE}/srcdir/papilo
 cp ${WORKSPACE}/srcdir/src/papilo_presolve.h src/
 cp ${WORKSPACE}/srcdir/src/papilo_presolve.cpp src/
-cat >> CMakeLists.txt << 'EOF'
-
-include(GenerateExportHeader)
-add_library(papilo-presolve SHARED src/papilo_presolve.cpp)
-generate_export_header(papilo-presolve BASE_NAME PAPILO_PRESOLVE EXPORT_FILE_NAME papilo_presolve_export.h)
-target_link_libraries(papilo-presolve PRIVATE papilo-core papilo)
-target_compile_definitions(papilo-presolve PRIVATE PAPILO_USE_EXTERN_TEMPLATES)
-target_include_directories(papilo-presolve PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
-    $<INSTALL_INTERFACE:include>)
-install(TARGETS papilo-presolve LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(FILES
-    ${PROJECT_SOURCE_DIR}/src/papilo_presolve.h
-    ${PROJECT_BINARY_DIR}/papilo_presolve_export.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-EOF
+atomic_patch -p1 ${WORKSPACE}/srcdir/patches/papilo_presolve.patch
 
 cmake -S . -B build \
     -DCMAKE_INSTALL_PREFIX=${prefix} \

@@ -6,8 +6,10 @@
 #include "papilo/core/Presolve.hpp"
 #include "papilo/core/ProblemBuilder.hpp"
 #include "papilo/core/postsolve/Postsolve.hpp"
+#include "papilo/core/postsolve/ReductionType.hpp"
 #include <exception>
 #include <string>
+#include <vector>
 
 using namespace papilo;
 
@@ -241,6 +243,46 @@ int papilo_postsolve(const PAPILO_PRESOLVE_RESULT* r, const double* reduced, dou
    if (!r || !reduced || !original) { papilo_set_error("papilo_postsolve: null input"); return 1; }
    return papilo_try("papilo_postsolve failed", 1, [&]() { return papilo_postsolve_impl(r, reduced, original); });
 }
+
+void papilo_map_primal(const PAPILO_PRESOLVE_RESULT* r, const double* x_orig, double* x_red) {
+   if (!r || !x_orig || !x_red) return;
+
+   const auto& cm     = r->postsolve.origcol_mapping;   // reduced → original
+   const int   n_red  = static_cast<int>(cm.size());
+   const int   n_orig = r->origCols;
+
+   // Step 1: build inverse map: original → reduced (-1 if not present)
+   std::vector<int> orig_to_red(n_orig, -1);
+   for (int j = 0; j < n_red; ++j) orig_to_red[cm[j]] = j;
+
+   // Step 2: identity gather
+   for (int j = 0; j < n_red; ++j) x_red[j] = x_orig[cm[j]];
+
+   // Step 3: parallel-column fixup.
+   // For kParallelCol: y = col2 + col2scale * col1  (col2 survives, col1 eliminated)
+   //   indices[s+0] = orig_col1 (eliminated)
+   //   indices[s+2] = orig_col2 (surviving)
+   //   values[s+4]  = col2scale
+   // Step 2 already placed x_orig[orig_col2] in x_red[j_red].
+   // We add col2scale * x_orig[orig_col1] to complete the inverse.
+   const auto& types   = r->postsolve.types;
+   const auto& indices = r->postsolve.indices;
+   const auto& values  = r->postsolve.values;
+   const auto& start   = r->postsolve.start;
+
+   for (int t = 0; t < static_cast<int>(types.size()); ++t) {
+      if (types[t] != ReductionType::kParallelCol) continue;
+      const int s        = start[t];
+      const int orig_col1 = indices[s];      // eliminated
+      const int orig_col2 = indices[s + 2];  // surviving
+      const double col2scale = values[s + 4];
+
+      const int j_red = orig_to_red[orig_col2];
+      if (j_red >= 0)
+         x_red[j_red] += col2scale * x_orig[orig_col1];
+   }
+}
+
 void papilo_result_free(PAPILO_PRESOLVE_RESULT* r) { delete r; }
 
 } // extern "C"
