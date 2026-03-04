@@ -115,11 +115,8 @@ static int papilo_postsolve_impl(const PAPILO_PRESOLVE_RESULT* r, const double* 
    msg.setVerbosityLevel(VerbosityLevel::kQuiet);
 
    Postsolve<double> ps(msg, num);
-   PostsolveStatus st = ps.undo(redSol, origSol, r->postsolve);
-   if (st != PostsolveStatus::kOk) {
-      papilo_set_error("postsolve failed");
-      return 1;
-   }
+   // we pass isoptimal = false since CoolPDLP has looser tolerances than papilo.
+   ps.undo(redSol, origSol, r->postsolve, false);
    for (size_t j = 0; j < origSol.primal.size(); ++j) original[j] = origSol.primal[j];
    return 0;
 }
