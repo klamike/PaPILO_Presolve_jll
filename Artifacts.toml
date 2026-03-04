@@ -64,10 +64,10 @@ os = "linux"
     url = "file:///Users/mklamkin3/Git/CoolPDLP/PaPILO.jl/PaPILO_Presolve_jll/products/PaPILO_Presolve.v3.0.0.x86_64-linux-musl-libgfortran5-cxx11.tar.gz"
 [[PaPILO_Presolve]]
 arch = "aarch64"
-git-tree-sha1 = "3cb0cd8659f80cfc0b6b1267c6e815494407cc11"
+git-tree-sha1 = "e3c14f5f9ed7b93391679b74addf86b3511c1ec3"
 libgfortran_version = "5.0.0"
 os = "macos"
 
     [[PaPILO_Presolve.download]]
-    sha256 = "72b0b9ebf35898309649c58ae7859a107999968953979c1d3053fe23e929b39f"
+    sha256 = "787d44db1493b16fe8c56703fd5ed2c0dbf9ad4af34998559914a21045a9ed6e"
     url = "file:///Users/mklamkin3/Git/CoolPDLP/PaPILO.jl/PaPILO_Presolve_jll/products/PaPILO_Presolve.v3.1.0.aarch64-apple-darwin-libgfortran5.tar.gz"

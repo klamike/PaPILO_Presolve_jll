@@ -32,7 +32,13 @@ run(`git -C $PAPILO_SRC apply $PATCH`)
 
 # ── 1. Re-run cmake to pick up the new papilo-presolve target, then build ──────
 @info "Reconfiguring cmake..."
-run(`cmake -S $PAPILO_SRC -B $PAPILO_BUILD -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DPAPILO_NO_BINARIES=ON`)
+tbb_dir = "/opt/homebrew/opt/tbb/lib/cmake/TBB"
+run(`cmake -S $PAPILO_SRC -B $PAPILO_BUILD
+    -DCMAKE_BUILD_TYPE=Release
+    -DBUILD_TESTING=OFF
+    -DPAPILO_NO_BINARIES=ON
+    -DTBB=ON
+    -DTBB_DIR=$tbb_dir`)
 
 @info "Building libpapilo-presolve..."
 run(`cmake --build $PAPILO_BUILD --target papilo-presolve -j$(Sys.CPU_THREADS)`)
